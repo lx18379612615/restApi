@@ -98,9 +98,10 @@ def bestModel(data):
     best_k = None
     best_score = None
     log.info("data: {}".format(data))
-    for k in range(2, 5):
+    for k in range(2, 11):
         log.info("k: {}".format(k))
-        clf = KMeans(n_clusters=k, init="k-means++", n_init=10, max_iter=300, tol=0.0001, random_state=111, algorithm='elkan')
+        # algorithm="elkan" clf.fit(data)不会报错
+        clf = KMeans(n_clusters=k, init="k-means++", n_init=10, algorithm="elkan")
         clf.fit(data)
         # silhouette_score(): 轮廓系数函数，有什么用？score是啥？
         score = silhouette_score(data, clf.labels_)
