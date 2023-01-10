@@ -17,7 +17,8 @@ def clean_x_datas(df):
     cols = df.columns
     text_fields = list(set(get_text_fields()).intersection(set(cols)))
     if len(text_fields) > 0:
-        text_df = df[text_fields]
+        # text_df = df[text_fields]
+        text_df = df
         text_df.astype('str')
         log.info("text_df: ")
         log.info(text_df)
@@ -28,7 +29,6 @@ def clean_x_datas(df):
         log.info(text_df)
         for field in text_fields:
             df[field] = text_df[field]
-    log.info("这是在干嘛1235")
     df = pd.DataFrame(format_feature(df))
     df = df.astype('float64')
     df.columns = cols
@@ -41,13 +41,18 @@ def format_feature(x_train):
     x_train = scaler.transform(x_train)
     return x_train
 
+# 数据转换
+# 入参：df: 所有种子用户[tag]标签数据; positive_value种子客户判别规则
+# 出参：df: 转换之后的标签数据; transformed_positive_value: transformed_positive_value
 def clean_y_datas(df, positive_value):
     df.fillna('0', inplace=True)
+    # 以下三行是做数据转换，将离散型的数据转换成 0 到 n − 1 之间的数，这里 n 是一个列表的不同取值的个数，可以认为是某个特征的所有不同取值的个数
     le = LabelEncoder()
     le.fit(df)
     df = pd.DataFrame(le.transform(df))
     # 特殊处理
     if len(le.classes_) == 1:
+        # 都是同样的数据
         transformed_positive_value = le.transform([le.classes_[0]])[0]
     else:
         transformed_positive_value = le.transform([positive_value])[0]
